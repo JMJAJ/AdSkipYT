@@ -55,7 +55,7 @@
     }
 
     function removeMainPageAds() {
-        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer');
+        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer', 'ytd-rich-item-renderer:has(ytd-ad-slot-renderer)');
         ads.forEach(ad => ad.remove());
     }
 
