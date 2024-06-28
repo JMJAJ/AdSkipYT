@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Ad Detector with Auto-Skip
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  Detect if an ad is being played on YouTube and auto-skip
 // @author       Jxint
 // @match        https://www.youtube.com/*
@@ -12,8 +12,8 @@
     'use strict';
 
     const adSelectors = [
-        // '.video-ads.ytp-ad-module', // Main container for video ads
         '.ytp-ad-player-overlay-layout', // Overlay layout for ads
+        // there was more before tho it wasnt needed
     ];
 
     const adBanner = document.createElement('div');
@@ -54,6 +54,11 @@
         }
     }
 
+    function removeMainPageAds() {
+        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer');
+        ads.forEach(ad => ad.remove());
+    }
+
     function enablePiP() {
         const videoElement = document.querySelector('video');
         if (videoElement) {
@@ -78,6 +83,7 @@
     const observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
             checkForAds();
+            removeMainPageAds();
         });
     });
 
@@ -87,4 +93,5 @@
     });
 
     checkForAds();
+    removeMainPageAds();
 })();
