@@ -59,22 +59,10 @@
         ads.forEach(ad => ad.remove());
     }
 
-    function enablePiP() {
-        const videoElement = document.querySelector('video');
-        if (videoElement) {
-            videoElement.requestPictureInPicture().catch(error => {
-                console.error('Failed to enable PiP mode:', error);
-            });
-        } else {
-            console.error('No video element found');
-        }
-    }
-
     function autoSkipAd() {
         const videoElement = document.querySelector('video');
         if (videoElement) {
             videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + 10);
-            enablePiP();
         } else {
             console.error('No video element found');
         }
