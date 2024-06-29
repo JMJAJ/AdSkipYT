@@ -8,7 +8,8 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 
 - **Ad Detection:** Identifies when an ad is being played on YouTube.
 - **Auto-Skip:** Automatically skips the detected ad.
-- **Ad Banner:** Displays a banner when an ad is detected.
+- **Red Ad Banner:** Displays a banner when an ad is detected.
+- **Ad Banner Under Video** Removes promotional content under the video
 - **Main Page Ad Removal:** Removes promotional content from the YouTube main page.
 
 ## Installation
@@ -23,7 +24,7 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 // @name         YouTube Ad Detector with Auto-Skip
 // @namespace    http://tampermonkey.net/
 // @version      1.6
-// @description  Detect if an ad is being played on YouTube and auto-skip
+// @description  auto-skip
 // @author       Jxint
 // @match        https://www.youtube.com/*
 // @grant        none
