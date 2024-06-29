@@ -33,7 +33,7 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
     'use strict';
 
     const adSelectors = [
-        '.ytp-ad-player-overlay-layout', // Overlay layout for ads
+        '.ytp-ad-player-overlay-layout',
     ];
 
     const adBanner = document.createElement('div');
