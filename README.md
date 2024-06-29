@@ -105,9 +105,5 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 })();
 ```
 
-## Usage
- - Copypaste the script into Tampermonkey via *Create a new script...*.
- - Visit YouTube and watch videos as usual. The script will automatically detect and skip ads kek.
-
 ## Contributing
  - This time I actually welcome some ideas
