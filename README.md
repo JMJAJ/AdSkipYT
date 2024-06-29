@@ -75,7 +75,7 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
     }
 
     function removeMainPageAds() {
-        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer)');
+        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), #player-ads');
         ads.forEach(ad => ad.remove());
     }
 
