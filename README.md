@@ -22,7 +22,7 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 // ==UserScript==
 // @name         YouTube Ad Detector with Auto-Skip
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Detect if an ad is being played on YouTube and auto-skip
 // @author       Jxint
 // @match        https://www.youtube.com/*
