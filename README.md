@@ -23,7 +23,7 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 // ==UserScript==
 // @name         YouTube Ad Detector with Auto-Skip
 // @namespace    http://tampermonkey.net/
-// @version      1.6
+// @version      1.7
 // @description  auto-skip
 // @author       Jxint
 // @match        https://www.youtube.com/*
@@ -76,7 +76,7 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
     }
 
     function removeMainPageAds() {
-        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), #player-ads');
+        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), #player-ads, #masthead-ad');
         ads.forEach(ad => ad.remove());
     }
 
