@@ -21,10 +21,10 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 
 ```javascript
 // ==UserScript==
-// @name         YouTube Ad Detector with Auto-Skip
+// @name         YouTube Ad Skipper
 // @namespace    http://tampermonkey.net/
-// @version      1.7
-// @description  auto-skip
+// @version      1.8
+// @description  Skip ads on YouTube automatically
 // @author       Jxint
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -33,23 +33,31 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 (function () {
     'use strict';
 
-    const adSelectors = [
-        '.ytp-ad-player-overlay-layout',
-    ];
+    let adDetected = false;
+    const adBanner = createAdBanner();
 
-    const adBanner = document.createElement('div');
-    adBanner.id = 'ad-banner';
-    adBanner.style.position = 'fixed';
-    adBanner.style.top = '0';
-    adBanner.style.width = '100%';
-    adBanner.style.backgroundColor = 'red';
-    adBanner.style.color = 'white';
-    adBanner.style.textAlign = 'center';
-    adBanner.style.padding = '10px';
-    adBanner.style.zIndex = '10000';
-    adBanner.style.display = 'none';
-    adBanner.innerText = 'Ad is being played!';
-    document.body.appendChild(adBanner);
+    function createAdBanner() {
+        const adBanner = document.createElement('div');
+        adBanner.id = 'ad-banner';
+        adBanner.style.cssText = 'position: fixed; top: 0; width: 100%; background-color: red; color: white; text-align: center; padding: 10px; z-index: 10000; display: none;';
+        adBanner.innerText = 'Ad is being played!';
+        document.body.appendChild(adBanner);
+        return adBanner;
+    }
+
+    function checkForAds() {
+        const adSelectors = [
+            '.ytp-ad-player-overlay-layout',
+        ];
+
+        adDetected = adSelectors.some(selector => document.querySelector(selector));
+        if (adDetected) {
+            showAdBanner();
+            autoSkipAd();
+        } else {
+            hideAdBanner();
+        }
+    }
 
     function showAdBanner() {
         adBanner.style.display = 'block';
@@ -59,27 +67,6 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
         adBanner.style.display = 'none';
     }
 
-    function checkForAds() {
-        let adDetected = false;
-        adSelectors.forEach(selector => {
-            if (document.querySelector(selector)) {
-                console.log('Ad detected:', selector);
-                adDetected = true;
-            }
-        });
-        if (adDetected) {
-            showAdBanner();
-            autoSkipAd();
-        } else {
-            hideAdBanner();
-        }
-    }
-
-    function removeMainPageAds() {
-        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), #player-ads, #masthead-ad');
-        ads.forEach(ad => ad.remove());
-    }
-
     function autoSkipAd() {
         const videoElement = document.querySelector('video');
         if (videoElement) {
@@ -87,24 +74,39 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
         } else {
             console.error('No video element found');
         }
+
+        const skipButton = document.querySelector('.ytp-ad-skip-button-text');
+        if (skipButton) {
+            skipButton.click();
+        } else {
+            console.error('No skip button found');
+        }
     }
 
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-            checkForAds();
-            removeMainPageAds();
+    function removeMainPageAds() {
+        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), ytd-badge-supported-renderer, #player-ads, #masthead-ad');
+        ads.forEach(ad => ad.remove());
+    }
+
+    function handleMutations(mutationsList) {
+        mutationsList.forEach(mutation => {
+            if (mutation.type === 'childList' || mutation.type === 'attributes') {
+                checkForAds();
+                removeMainPageAds();
+            }
         });
-    });
+    }
+
+    const observer = new MutationObserver(handleMutations);
 
     observer.observe(document.body, {
         childList: true,
         subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'src'],
     });
 
     checkForAds();
     removeMainPageAds();
 })();
 ```
-
-## Contributing
- - This time I actually welcome some ideas
