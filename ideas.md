@@ -18,7 +18,7 @@
         const adIndicator = document.querySelector('.ad-showing'); // Detects if an ad is being shown
 
         if (video && adIndicator) {
-            video.playbackRate = 50; // Speed up the video by 1000x
+            video.playbackRate = 50; // Speed up the video
         } else if (video) {
             video.playbackRate = 1; // Reset the playback rate to normal when not an ad
         }
