@@ -1,4 +1,4 @@
-# As of now, it works sometimes. I will try to fix it
+# As of now, it works sometimes but yt can detect it. I will try to fix it
 
 # YouTube Ad Detector with Auto-Skip
 
