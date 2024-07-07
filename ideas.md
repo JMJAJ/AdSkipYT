@@ -1,3 +1,4 @@
+## Idea #1
 ```javascript
 // ==UserScript==
 // @name         YouTube Ad Fast-Forward
@@ -30,7 +31,6 @@
 
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Initial check
     checkForAd();
 })();
 
