@@ -23,10 +23,10 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 
 ```javascript
 // ==UserScript==
-// @name         YouTube Ad Skipper
+// @name         YouTube Ad Skipper (Optimized)
 // @namespace    http://tampermonkey.net/
-// @version      1.8
-// @description  Skip ads on YouTube automatically
+// @version      2.0
+// @description  Skip ads on YouTube automatically with improved performance
 // @author       Jxint
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -35,8 +35,9 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 (function () {
     'use strict';
 
-    let adDetected = false;
     const adBanner = createAdBanner();
+    let lastCheckTime = 0;
+    const checkInterval = 100;
 
     function createAdBanner() {
         const adBanner = document.createElement('div');
@@ -48,59 +49,40 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
     }
 
     function checkForAds() {
-        const adSelectors = [
-            '.ytp-ad-player-overlay-layout',
-        ];
+        const now = Date.now();
+        if (now - lastCheckTime < checkInterval) return;
+        lastCheckTime = now;
 
-        adDetected = adSelectors.some(selector => document.querySelector(selector));
-        if (adDetected) {
-            showAdBanner();
+        const adSelectors = '.ytp-ad-player-overlay-layout, .ytp-ad-text, .ytp-ad-skip-button-container';
+        const adElement = document.querySelector(adSelectors);
+
+        if (adElement) {
+            adBanner.style.display = 'block';
             autoSkipAd();
         } else {
-            hideAdBanner();
+            adBanner.style.display = 'none';
         }
-    }
-
-    function showAdBanner() {
-        adBanner.style.display = 'block';
-    }
-
-    function hideAdBanner() {
-        adBanner.style.display = 'none';
     }
 
     function autoSkipAd() {
         const videoElement = document.querySelector('video');
         if (videoElement) {
-            videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + 10);
-        } else {
-            console.error('No video element found');
+            videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + 100);
         }
 
-        const skipButton = document.querySelector('.ytp-ad-skip-button-text');
+        const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-container button, .ytp-ad-skip-button-text');
         if (skipButton) {
             skipButton.click();
-        } else {
-            console.error('No skip button found');
+            console.log('Ad skipped');
         }
     }
 
     function removeMainPageAds() {
-        const ads = document.querySelectorAll('ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), ytd-badge-supported-renderer, #player-ads, #masthead-ad');
-        ads.forEach(ad => ad.remove());
+        const adSelectors = 'ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), ytd-badge-supported-renderer, ytd-ad-slot-renderer, #player-ads, #masthead-ad';
+        document.querySelectorAll(adSelectors).forEach(ad => ad.remove());
     }
 
-    function handleMutations(mutationsList) {
-        mutationsList.forEach(mutation => {
-            if (mutation.type === 'childList' || mutation.type === 'attributes') {
-                checkForAds();
-                removeMainPageAds();
-            }
-        });
-    }
-
-    const observer = new MutationObserver(handleMutations);
-
+    const observer = new MutationObserver(checkForAds);
     observer.observe(document.body, {
         childList: true,
         subtree: true,
@@ -108,7 +90,11 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
         attributeFilter: ['class', 'src'],
     });
 
+    // Initial checks
     checkForAds();
     removeMainPageAds();
+
+    // Periodically remove main page ads
+    setInterval(removeMainPageAds, 100);
 })();
 ```
