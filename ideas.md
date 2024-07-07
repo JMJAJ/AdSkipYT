@@ -1,4 +1,4 @@
-```json
+```javascript
 // ==UserScript==
 // @name         YouTube Ad Fast-Forward
 // @namespace    http://tampermonkey.net/
