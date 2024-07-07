@@ -1,3 +1,5 @@
+# As of now, it works sometimes. I will try to fix it
+
 # YouTube Ad Detector with Auto-Skip
 
 ## Overview
