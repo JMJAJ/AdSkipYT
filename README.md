@@ -1,4 +1,6 @@
-# As of now, it works sometimes but yt can detect it. I will try to fix it
+# Current State - update on 10/7/2024
+ - So in last 3 days, it works now fine last 24 hours but didnt work between 7/7/2024 to 8/7/2024. Im genuinely confused xd
+ - As of now, it works sometimes but yt can detect it. I will try to fix it (7/7/2024)
 
 # YouTube Ad Detector with Auto-Skip
 
