@@ -2,9 +2,6 @@
 
 ## Current State - Updated on 8/9/2024
 
-- As of the last 24 hours (9/7/2024 - 10/7/2024), the script is functioning properly.
-- Between 7/7/2024 and 8/7/2024, the script experienced some issues and was not working as expected.
-- On 7/7/2024, it was noted that the script worked intermittently, but YouTube could detect it at times.
 - The functionality of the script may fluctuate due to ongoing changes in YouTube's ad delivery and detection systems.
 
 ## Overview
