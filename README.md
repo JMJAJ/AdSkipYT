@@ -25,10 +25,10 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 
 ```javascript
 // ==UserScript==
-// @name         YouTube Ad Skipper (Enhanced)
+// @name         YouTube Ad Skipper (Enhanced with Auto-Refresh)
 // @namespace    http://tampermonkey.net/
-// @version      2.1
-// @description  Skip ads on YouTube automatically with improved performance and features
+// @version      2.2
+// @description  Skip ads on YouTube automatically, with improved performance and auto-refresh for adblock detection
 // @author       Jxint (improved by Claude)
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -41,11 +41,15 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
         checkInterval: 100,
         adBannerColor: 'red',
         adBannerText: 'Ad is being played!',
-        debug: false
+        debug: false,
+        refreshDelay: 3000, // Delay before refreshing (in milliseconds)
+        maxRefreshCount: 3, // Maximum number of consecutive refreshes
     };
 
     const adBanner = createAdBanner();
     let lastCheckTime = 0;
+    let refreshCount = 0;
+    let lastRefreshTime = 0;
 
     function createAdBanner() {
         const adBanner = document.createElement('div');
@@ -88,6 +92,8 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
         } else {
             adBanner.style.display = 'none';
         }
+
+        checkForAdblockDetection();
     }
 
     function autoSkipAd() {
@@ -102,6 +108,42 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
         if (skipButton) {
             skipButton.click();
             log('Ad skipped');
+        }
+    }
+
+    function checkForAdblockDetection() {
+        const adblockDetectionSelectors = [
+            'ytd-enforcement-message-view-model',
+            '.ytd-player-error-message-renderer',
+            '#error-screen',
+            '.ytp-error'
+        ];
+
+        const adblockDetected = adblockDetectionSelectors.some(selector =>
+            document.querySelector(selector)?.textContent.toLowerCase().includes('ad blocker')
+        );
+
+        if (adblockDetected) {
+            log('Adblock detection message found');
+            refreshPage();
+        } else {
+            refreshCount = 0;
+        }
+    }
+
+    function refreshPage() {
+        const now = Date.now();
+        if (now - lastRefreshTime < config.refreshDelay) return;
+
+        if (refreshCount < config.maxRefreshCount) {
+            refreshCount++;
+            lastRefreshTime = now;
+            log(`Refreshing page (attempt ${refreshCount})`);
+            setTimeout(() => {
+                window.location.reload();
+            }, config.refreshDelay);
+        } else {
+            log(`Max refresh attempts (${config.maxRefreshCount}) reached. Please check manually.`);
         }
     }
 
