@@ -1,25 +1,61 @@
-# Current State - update on 10/7/2024
- - So in last 3 days, it works now fine last 24 hours but didnt work between 7/7/2024 to 8/7/2024. Im genuinely confused xd
- - As of now, it works sometimes but yt can detect it. I will try to fix it (7/7/2024)
-
 # YouTube Ad Detector with Auto-Skip
+
+## Current State - Updated on 10/7/2024
+
+- As of the last 24 hours (9/7/2024 - 10/7/2024), the script is functioning properly.
+- Between 7/7/2024 and 8/7/2024, the script experienced some issues and was not working as expected.
+- On 7/7/2024, it was noted that the script worked intermittently, but YouTube could detect it at times.
+- The functionality of the script may fluctuate due to ongoing changes in YouTube's ad delivery and detection systems.
 
 ## Overview
 
-This Tampermonkey script detects ads on YouTube and automatically skips them. When an ad is detected, a red banner is displayed at the top of the screen indicating that an ad is being played (mainly used for debugging). The script also removes various main page ads on YouTube.
+This Tampermonkey script detects ads on YouTube and automatically skips them. When an ad is detected, a red banner is displayed at the top of the screen, primarily for debugging purposes. The script also removes various main page ads and promotional content on YouTube.
 
 ## Features
 
 - **Ad Detection:** Identifies when an ad is being played on YouTube.
-- **Auto-Skip:** Automatically skips the detected ad.
-- **Red Ad Banner:** Displays a banner when an ad is detected.
-- **Ad Banner Under Video** Removes promotional content under the video
-- **Main Page Ad Removal:** Removes promotional content from the YouTube main page.
+- **Auto-Skip:** Automatically skips the detected ad when possible.
+- **Visual Indicator:** Displays a red banner when an ad is detected (mainly for debugging).
+- **Ad Content Removal:** 
+  - Removes promotional content under videos
+  - Removes ads from the YouTube main page
+- **Anti-Adblock Detection:** Attempts to bypass YouTube's ad blocker detection by refreshing the page.
 
 ## Installation
 
-1. **Install Tampermonkey:** If you haven't already, install Tampermonkey for your browser from [here](https://www.tampermonkey.net/).
-2. **Add the Script:** Click on the Tampermonkey extension icon and select "Create a new script...". Copy and paste the code below into the editor and save.
+1. **Install Tampermonkey:** If you haven't already, install the Tampermonkey extension for your browser from [the official website](https://www.tampermonkey.net/).
+2. **Add the Script:** Click on the Tampermonkey extension icon and select "Create a new script...". Copy and paste the latest version of the script into the editor and save.
+
+## Usage
+
+Once installed, the script will run automatically on YouTube pages. You should notice:
+
+- Ads being skipped more quickly
+- A red banner appearing briefly when ads are detected (if not immediately skipped)
+- Fewer promotional elements on the YouTube main page and under videos
+
+## Known Issues and Limitations
+
+- The effectiveness of the script may vary as YouTube frequently updates its ad delivery system and anti-adblock measures.
+- In some cases, YouTube may still detect the use of this script, potentially leading to warnings or reduced functionality.
+- The page refresh feature (to bypass adblock detection) may cause a slightly disruptive viewing experience.
+
+## Troubleshooting
+
+If you encounter issues with the script:
+
+1. Ensure you're using the latest version of the script.
+2. Try disabling and re-enabling the script in Tampermonkey.
+3. Clear your browser cache and cookies for YouTube.
+4. If problems persist, consider temporarily disabling the script and checking for updates or community discussions about recent YouTube changes.
+
+## Disclaimer
+
+This script is for educational purposes only. Be aware that its use may violate YouTube's terms of service. Use at your own risk.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Script
 
