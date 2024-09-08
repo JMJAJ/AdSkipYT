@@ -62,7 +62,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 // @namespace    http://tampermonkey.net/
 // @version      2.2
 // @description  Skip ads on YouTube automatically, with improved performance and auto-refresh for adblock detection
-// @author       Jxint (improved by Claude)
+// @author       Jxint
 // @match        https://www.youtube.com/*
 // @grant        none
 // ==/UserScript==
