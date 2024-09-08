@@ -25,34 +25,58 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
 
 ```javascript
 // ==UserScript==
-// @name         YouTube Ad Skipper (Optimized)
+// @name         YouTube Ad Skipper (Enhanced)
 // @namespace    http://tampermonkey.net/
-// @version      2.0
-// @description  Skip ads on YouTube automatically with improved performance
-// @author       Jxint
+// @version      2.1
+// @description  Skip ads on YouTube automatically with improved performance and features
+// @author       Jxint (improved by Claude)
 // @match        https://www.youtube.com/*
 // @grant        none
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
+
+    const config = {
+        checkInterval: 100,
+        adBannerColor: 'red',
+        adBannerText: 'Ad is being played!',
+        debug: false
+    };
 
     const adBanner = createAdBanner();
     let lastCheckTime = 0;
-    const checkInterval = 100;
 
     function createAdBanner() {
         const adBanner = document.createElement('div');
         adBanner.id = 'ad-banner';
-        adBanner.style.cssText = 'position: fixed; top: 0; width: 100%; background-color: red; color: white; text-align: center; padding: 10px; z-index: 10000; display: none;';
-        adBanner.innerText = 'Ad is being played!';
+        adBanner.style.cssText = `
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: ${config.adBannerColor};
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 10000;
+            display: none;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        `;
+        adBanner.innerText = config.adBannerText;
         document.body.appendChild(adBanner);
         return adBanner;
     }
 
+    function log(message) {
+        if (config.debug) {
+            console.log(`[YouTube Ad Skipper] ${message}`);
+        }
+    }
+
     function checkForAds() {
         const now = Date.now();
-        if (now - lastCheckTime < checkInterval) return;
+        if (now - lastCheckTime < config.checkInterval) return;
         lastCheckTime = now;
 
         const adSelectors = '.ytp-ad-player-overlay-layout, .ytp-ad-text, .ytp-ad-skip-button-container';
@@ -69,34 +93,67 @@ This Tampermonkey script detects ads on YouTube and automatically skips them. Wh
     function autoSkipAd() {
         const videoElement = document.querySelector('video');
         if (videoElement) {
-            videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + 100);
+            const newTime = Math.min(videoElement.duration, videoElement.currentTime + 100);
+            videoElement.currentTime = newTime;
+            log(`Video time set to ${newTime}`);
         }
 
         const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-container button, .ytp-ad-skip-button-text');
         if (skipButton) {
             skipButton.click();
-            console.log('Ad skipped');
+            log('Ad skipped');
         }
     }
 
     function removeMainPageAds() {
-        const adSelectors = 'ytd-display-ad-renderer, ytd-promoted-sparkles-web-renderer, ytd-rich-item-renderer:has(ytd-ad-slot-renderer), ytd-badge-supported-renderer, ytd-ad-slot-renderer, #player-ads, #masthead-ad';
-        document.querySelectorAll(adSelectors).forEach(ad => ad.remove());
+        const adSelectors = `
+            ytd-display-ad-renderer,
+            ytd-promoted-sparkles-web-renderer,
+            ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
+            ytd-badge-supported-renderer,
+            ytd-ad-slot-renderer,
+            #player-ads,
+            #masthead-ad,
+            .ytd-promoted-video-renderer
+        `;
+        const removedAds = document.querySelectorAll(adSelectors);
+        removedAds.forEach(ad => ad.remove());
+        if (removedAds.length > 0) {
+            log(`Removed ${removedAds.length} main page ad elements`);
+        }
     }
 
-    const observer = new MutationObserver(checkForAds);
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class', 'src'],
-    });
+    function initMutationObserver() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'childList' ||
+                    (mutation.type === 'attributes' &&
+                     ['class', 'src'].includes(mutation.attributeName))) {
+                    checkForAds();
+                    removeMainPageAds();
+                }
+            });
+        });
 
-    // Initial checks
-    checkForAds();
-    removeMainPageAds();
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'src'],
+        });
 
-    // Periodically remove main page ads
-    setInterval(removeMainPageAds, 100);
+        log('Mutation observer initialized');
+    }
+
+    function init() {
+        log('Initializing YouTube Ad Skipper');
+        checkForAds();
+        removeMainPageAds();
+        initMutationObserver();
+        setInterval(removeMainPageAds, config.checkInterval);
+    }
+
+    // Start the script
+    init();
 })();
 ```
