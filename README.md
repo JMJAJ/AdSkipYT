@@ -2,7 +2,7 @@
 
 ## Current State - Updated on 17/9/2024
 
-- <s>It works but yt breaks it sometimes, like it works 1 week and then 2 days in row its broken tho mostly its broken for  just few hours or few vids</s> I updated the code and optimized it so lets see
+- <s>It works but yt breaks it sometimes, like it works 1 week and then 2 days in row its broken tho mostly its broken for just few hours or few vids</s> I updated the code and optimized it so lets see
 
 ## Overview
 
