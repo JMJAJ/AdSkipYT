@@ -1,8 +1,8 @@
 # YouTube Ad Detector with Auto-Skip
 
-## Current State - Updated on 8/9/2024
+## Current State - Updated on 17/9/2024
 
-- The functionality of the script may fluctuate due to ongoing changes in YouTube's ad delivery and detection systems.
+- It works but yt breaks it sometimes, like it works 1 week and then 2 days in row its broken tho mostly its broken for  just few hours or few vids
 
 ## Overview
 
