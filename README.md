@@ -2,7 +2,7 @@
 
 ## Current State - Updated on 17/9/2024
 
-- It works but yt breaks it sometimes, like it works 1 week and then 2 days in row its broken tho mostly its broken for  just few hours or few vids
+- <s>It works but yt breaks it sometimes, like it works 1 week and then 2 days in row its broken tho mostly its broken for  just few hours or few vids</s> I updated the code and optimized it so lets see
 
 ## Overview
 
@@ -58,10 +58,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ```javascript
 // ==UserScript==
-// @name         YouTube Ad Skipper (Enhanced with Auto-Refresh)
+// @name         YouTube Ad Skipper (Enhanced with Anti-Adblock) - Optimized
 // @namespace    http://tampermonkey.net/
-// @version      2.2
-// @description  Skip ads on YouTube automatically, with improved performance and auto-refresh for adblock detection
+// @version      2.4
+// @description  Skip ads on YouTube automatically, with improved performance and advanced anti-adblock measures
 // @author       Jxint
 // @match        https://www.youtube.com/*
 // @grant        none
@@ -71,21 +71,37 @@ This project is licensed under the MIT License - see the LICENSE file for detail
     'use strict';
 
     const config = {
-        checkInterval: 100,
+        checkInterval: 250, // Increased from 100ms to reduce CPU usage
         adBannerColor: 'red',
         adBannerText: 'Ad is being played!',
         debug: false,
-        refreshDelay: 3000, // Delay before refreshing (in milliseconds)
-        maxRefreshCount: 3, // Maximum number of consecutive refreshes
+        refreshDelay: 3000,
+        maxRefreshCount: 3,
     };
 
-    const adBanner = createAdBanner();
+    let adBanner;
     let lastCheckTime = 0;
     let refreshCount = 0;
     let lastRefreshTime = 0;
 
+    const adSelectors = {
+        video: '.ytp-ad-player-overlay-layout, .ytp-ad-text, .ytp-ad-skip-button-container',
+        mainPage: `
+            ytd-display-ad-renderer,
+            ytd-promoted-sparkles-web-renderer,
+            ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
+            ytd-badge-supported-renderer,
+            ytd-ad-slot-renderer,
+            #player-ads,
+            #masthead-ad,
+            .ytd-promoted-video-renderer
+        `
+    };
+
     function createAdBanner() {
-        const adBanner = document.createElement('div');
+        if (adBanner) return;
+
+        adBanner = document.createElement('div');
         adBanner.id = 'ad-banner';
         adBanner.style.cssText = `
             position: fixed;
@@ -100,9 +116,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
             font-weight: bold;
             font-family: Arial, sans-serif;
         `;
-        adBanner.innerText = config.adBannerText;
+        adBanner.textContent = config.adBannerText;
         document.body.appendChild(adBanner);
-        return adBanner;
     }
 
     function log(message) {
@@ -112,17 +127,17 @@ This project is licensed under the MIT License - see the LICENSE file for detail
     }
 
     function checkForAds() {
-        const now = Date.now();
+        const now = performance.now();
         if (now - lastCheckTime < config.checkInterval) return;
         lastCheckTime = now;
 
-        const adSelectors = '.ytp-ad-player-overlay-layout, .ytp-ad-text, .ytp-ad-skip-button-container';
-        const adElement = document.querySelector(adSelectors);
+        const adElement = document.querySelector(adSelectors.video);
 
         if (adElement) {
+            if (!adBanner) createAdBanner();
             adBanner.style.display = 'block';
             autoSkipAd();
-        } else {
+        } else if (adBanner) {
             adBanner.style.display = 'none';
         }
 
@@ -132,9 +147,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
     function autoSkipAd() {
         const videoElement = document.querySelector('video');
         if (videoElement) {
-            const newTime = Math.min(videoElement.duration, videoElement.currentTime + 100);
-            videoElement.currentTime = newTime;
-            log(`Video time set to ${newTime}`);
+            videoElement.currentTime = Math.min(videoElement.duration, videoElement.currentTime + 100);
+            log(`Video time set to ${videoElement.currentTime}`);
         }
 
         const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-container button, .ytp-ad-skip-button-text');
@@ -145,53 +159,29 @@ This project is licensed under the MIT License - see the LICENSE file for detail
     }
 
     function checkForAdblockDetection() {
-        const adblockDetectionSelectors = [
-            'ytd-enforcement-message-view-model',
-            '.ytd-player-error-message-renderer',
-            '#error-screen',
-            '.ytp-error'
-        ];
-
-        const adblockDetected = adblockDetectionSelectors.some(selector =>
-            document.querySelector(selector)?.textContent.toLowerCase().includes('ad blocker')
-        );
-
-        if (adblockDetected) {
+        const adblockDetectionElement = document.getElementById('container');
+        if (adblockDetectionElement?.querySelector('ytd-enforcement-message-view-model')?.textContent.toLowerCase().includes('ad blocker')) {
             log('Adblock detection message found');
             refreshPage();
-        } else {
-            refreshCount = 0;
         }
     }
 
     function refreshPage() {
-        const now = Date.now();
+        const now = performance.now();
         if (now - lastRefreshTime < config.refreshDelay) return;
 
         if (refreshCount < config.maxRefreshCount) {
             refreshCount++;
             lastRefreshTime = now;
             log(`Refreshing page (attempt ${refreshCount})`);
-            setTimeout(() => {
-                window.location.reload();
-            }, config.refreshDelay);
+            setTimeout(() => window.location.reload(), config.refreshDelay);
         } else {
             log(`Max refresh attempts (${config.maxRefreshCount}) reached. Please check manually.`);
         }
     }
 
     function removeMainPageAds() {
-        const adSelectors = `
-            ytd-display-ad-renderer,
-            ytd-promoted-sparkles-web-renderer,
-            ytd-rich-item-renderer:has(ytd-ad-slot-renderer),
-            ytd-badge-supported-renderer,
-            ytd-ad-slot-renderer,
-            #player-ads,
-            #masthead-ad,
-            .ytd-promoted-video-renderer
-        `;
-        const removedAds = document.querySelectorAll(adSelectors);
+        const removedAds = document.querySelectorAll(adSelectors.mainPage);
         removedAds.forEach(ad => ad.remove());
         if (removedAds.length > 0) {
             log(`Removed ${removedAds.length} main page ad elements`);
@@ -200,14 +190,18 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
     function initMutationObserver() {
         const observer = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
+            let shouldCheck = false;
+            for (const mutation of mutations) {
                 if (mutation.type === 'childList' ||
-                    (mutation.type === 'attributes' &&
-                     ['class', 'src'].includes(mutation.attributeName))) {
-                    checkForAds();
-                    removeMainPageAds();
+                    (mutation.type === 'attributes' && ['class', 'src'].includes(mutation.attributeName))) {
+                    shouldCheck = true;
+                    break;
                 }
-            });
+            }
+            if (shouldCheck) {
+                checkForAds();
+                removeMainPageAds();
+            }
         });
 
         observer.observe(document.body, {
@@ -225,7 +219,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
         checkForAds();
         removeMainPageAds();
         initMutationObserver();
-        setInterval(removeMainPageAds, config.checkInterval);
     }
 
     // Start the script
